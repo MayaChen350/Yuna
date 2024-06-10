@@ -40,7 +40,7 @@ application {
 }
 
 
-val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.Mdd.Hm")
+val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.Mdd.H")
 val current: String = LocalDateTime.now().format(formatter)
 
 
