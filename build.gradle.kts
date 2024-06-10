@@ -4,12 +4,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 plugins {
-    kotlin("jvm") version "1.8.0"
     application
+    kotlin("jvm") version "1.8.0"
+    id("io.ktor.plugin") version "2.2.3"
 }
-
-group = "cz.lukynka"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -31,18 +29,25 @@ tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(17)
+java {
+    this.targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
 }
 
 application {
     mainClass.set("MainKt")
 }
 
-
 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.Mdd.H")
 val current: String = LocalDateTime.now().format(formatter)
 
+group = "cz.lukynka"
+version = current
 
 val gitBranch = "git rev-parse --abbrev-ref HEAD".runCommand()
 val gitCommit = "git rev-parse --short=8 HEAD".runCommand()
@@ -56,6 +61,11 @@ tasks.register("generateVersionFile") {
         outputFile.writeText("$current|$gitBranch|$gitCommit")
     }
 }
+
+application {
+    mainClass.set("MainKt")
+}
+
 
 tasks.named("processResources") {
     dependsOn("generateVersionFile")
