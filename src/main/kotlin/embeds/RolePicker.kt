@@ -34,8 +34,8 @@ class RolePicker {
                     emoji = DiscordPartialEmoji(name = "\uD83D\uDD14")
                 }
                 interactionButton(ButtonStyle.Secondary, "role-ping-dockyard") {
-                    label = "Updates"
-                    emoji = DiscordPartialEmoji(name = "\uD83D\uDD14")
+                    label = "DockyardMC Updates"
+                    emoji = DiscordPartialEmoji(name = "\uD83C\uDF0A")
                 }
             }
 
