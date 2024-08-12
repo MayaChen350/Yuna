@@ -33,6 +33,10 @@ class RolePicker {
                     label = "Updates"
                     emoji = DiscordPartialEmoji(name = "\uD83D\uDD14")
                 }
+                interactionButton(ButtonStyle.Secondary, "role-ping-dockyard") {
+                    label = "Updates"
+                    emoji = DiscordPartialEmoji(name = "\uD83D\uDD14")
+                }
             }
 
             embed {
@@ -49,6 +53,9 @@ class RolePicker {
             
             `🔔 | Update Notifications`
             - Get pinged whenever there is new version of things like **Better Saved Hotbars**, **Pretty Log** , **Keyboard Tools** etc.
+            
+            `🔔 | DockyardMC`
+            - Get pinged whenever there is update or changes to **DockyardMC**. This is separate cause most people probably do not care about DockyardMC and are here for other projects 
             
         """.trimIndent()
             }

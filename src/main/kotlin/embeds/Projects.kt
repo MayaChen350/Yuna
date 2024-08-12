@@ -40,18 +40,6 @@ class Projects {
         }
 
         projectsChannel.createEmbed {
-            title = "**__IntelliJ Twitch Channel Points Reward Integration__**"
-            description = """
-                 IntelliJ plugin that allows you to link your twitch channel point rewards to actions like changing theme, changing font, sending fake errors and etc.
-                    
-                 **Languages:** `Kotlin`
-                 ${clickableButton("Open on GitHub", "https://github.com/LukynkaCZE/IntelliJTwitchChannelPoints")}
-            """.trimIndent()
-            color = Color(203, 166, 247)
-            image = "https://private-user-images.githubusercontent.com/48604271/340070294-4e70f680-1dc4-4766-9cb3-883a86efd780.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTg1MzAxMTIsIm5iZiI6MTcxODUyOTgxMiwicGF0aCI6Ii80ODYwNDI3MS8zNDAwNzAyOTQtNGU3MGY2ODAtMWRjNC00NzY2LTljYjMtODgzYTg2ZWZkNzgwLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA2MTYlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNjE2VDA5MjMzMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTk0YjI3ZWFmMDA0ZGEyYmE2MDdlZWQ5YzM1ZjRjYzFmNmRhMmJkNWUzNWJhZmZlMmMyMTAwZTdiZDAwYjNhMzAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.4FIgkznMEPOxf7bi3jULYApGuar4WJpuBTTOyK4LpEM"
-        }
-
-        projectsChannel.createEmbed {
             title = "**__DockyardMC__**"
             description = """
                  DockyardMC is a open-source, fast and lightweight Minecraft server software that's written from scratch in Kotlin without any code from Mojang
@@ -73,6 +61,18 @@ class Projects {
             """.trimIndent()
             color = Color(250, 179, 135)
             image = "https://user-images.githubusercontent.com/48604271/235925525-e6b6a9f7-ef00-4148-ad51-6c8546ebcc55.gif"
+        }
+
+        projectsChannel.createEmbed {
+            title = "**__Ember Seeker__**"
+            description = """
+                 Minecraft server inspired by the Hermitcraft Decked Out minigame. Fully open-source and built with DockyardMC ${clickableButton("DockyardMC", "https://github.com/DockyardMC/Dockyard/")}
+                    
+                 **Languages:** `Kotlin`
+                 ${clickableButton("Open on GitHub", "https://github.com/EmberSeekerMC/")}
+            """.trimIndent()
+            color = Color(203, 166, 247)
+            image = "https://avatars.githubusercontent.com/u/146018383?s=200&v=4"
         }
 
         // 👀 Why hello there code viewer!

@@ -64,6 +64,7 @@ suspend fun main(args: Array<String>) {
             "role-tester" -> guild.getRole(Snowflake(1249425620216320124))
             "role-ping-twitch" -> guild.getRole(Snowflake(1249426163881873538))
             "role-ping-updates" -> guild.getRole(Snowflake(1249426247260311583))
+            "role-ping-dockyard" -> guild.getRole(Snowflake(1272642832242315306))
             else -> null
         }
 
