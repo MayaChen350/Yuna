@@ -15,6 +15,8 @@ import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.guild.MemberJoinEvent
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
+import dev.kord.core.event.message.ReactionAddEvent
+import dev.kord.core.event.message.ReactionRemoveEvent
 import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
@@ -27,6 +29,7 @@ import embeds.Rules
 lateinit var kord: Kord
 val version = Resources.getVersion()
 val guildId = Snowflake(1242845647892123650)
+val sobChannel = Snowflake(1376217561946914976) // Placeholder
 val memberRole = Snowflake(1249425717792477275)
 
 @OptIn(PrivilegedIntent::class)
@@ -40,6 +43,7 @@ suspend fun main(args: Array<String>) {
     Projects().register()
     RolePicker().register()
     Rules().register()
+    SobBoard().getMessages()
 
     kord.on<GuildChatInputCommandInteractionCreateEvent> {
         val response = interaction.deferPublicResponse()
@@ -53,6 +57,25 @@ suspend fun main(args: Array<String>) {
         member.addRole(memberRole)
     }
 
+    kord.on<ReactionAddEvent> {
+        val message = getMessage()
+        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(sobbedMessages.containsValue(getMessageLink(message))) {
+            SobBoard().updateBoard()
+        } else {
+            message.reactions.forEach { reaction ->
+                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count == 2) {
+                    SobBoard().addMessage(message)
+                }
+            }
+        }
+    }
+
+    kord.on<ReactionRemoveEvent> {
+        val message = getMessage()
+        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard().updateBoard()
+    }
 
     val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()
     kord.on<ButtonInteractionCreateEvent> {
