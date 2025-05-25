@@ -45,7 +45,7 @@ suspend fun main(args: Array<String>) {
     Projects().register()
     RolePicker().register()
     Rules().register()
-    SobBoard().getMessages()
+    SobBoard.getMessages()
 
     kord.on<GuildChatInputCommandInteractionCreateEvent> {
         val response = interaction.deferPublicResponse()
@@ -63,11 +63,11 @@ suspend fun main(args: Array<String>) {
         val message = getMessage()
         if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
         if(sobbedMessages.containsValue(getMessageLink(message))) {
-            SobBoard().updateBoard()
+            SobBoard.updateMessageFromMessage(message)
         } else {
             message.reactions.forEach { reaction ->
                 if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
-                    SobBoard().addMessage(message)
+                    SobBoard.addMessage(message)
                 }
             }
         }
@@ -75,13 +75,13 @@ suspend fun main(args: Array<String>) {
 
     kord.on<MessageUpdateEvent> {
         val message = getMessage()
-        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard().updateBoard()
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
     }
 
     kord.on<ReactionRemoveEvent> {
         val message = getMessage()
         if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
-        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard().updateBoard()
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
     }
 
     val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()

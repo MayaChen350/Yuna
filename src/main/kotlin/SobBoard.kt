@@ -6,7 +6,7 @@ import dev.kord.rest.builder.message.embed
 // Key is the board message, value is the original message
 val sobbedMessages: MutableMap<Message, String> = mutableMapOf()
 
-class SobBoard() {
+object SobBoard {
 
     suspend fun addMessage(message: Message) {
         val sobs = message.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
@@ -42,26 +42,55 @@ class SobBoard() {
     }
 
     suspend fun updateBoard() {
-        sobbedMessages.forEach { (boardMessage, originalMessage) ->
+        sobbedMessages.forEach { (_, originalMessage) ->
             val originalMessage: Message = getMessageFromLink(originalMessage)
-            val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
-            boardMessage.edit {
-                embed {
-                    description = if(originalMessage.embeds.isEmpty()) {
-                        originalMessage.content
-                    } else {
-                        originalMessage.embeds[0].description
-                    }
-                    author {
-                        name = originalMessage.author?.username
-                        icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
-                    }
-                    footer {
-                        text = "$sobs 😭"
-                    }
+            updateMessageFromMessage(originalMessage)
+        }
+    }
+
+    suspend fun updateMessageFromMessage(originalMessage: Message) {
+        val boardMessage = sobbedMessages.entries.find { it.value == getMessageLink(originalMessage) }?.key
+        val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
+        boardMessage?.edit {
+            embed {
+                description = if(originalMessage.embeds.isEmpty()) {
+                    originalMessage.content
+                } else {
+                    originalMessage.embeds[0].description
+                }
+                author {
+                    name = originalMessage.author?.username
+                    icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
+                }
+                footer {
+                    text = "$sobs 😭"
                 }
             }
         }
+
+    }
+
+    suspend fun updateMessageFromLink(originalMessage: String) {
+        val originalMessage: Message = getMessageFromLink(originalMessage)
+        val boardMessage = sobbedMessages.entries.find { it.value == getMessageLink(originalMessage) }?.key
+        val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
+        boardMessage?.edit {
+            embed {
+                description = if(originalMessage.embeds.isEmpty()) {
+                    originalMessage.content
+                } else {
+                    originalMessage.embeds[0].description
+                }
+                author {
+                    name = originalMessage.author?.username
+                    icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
+                }
+                footer {
+                    text = "$sobs 😭"
+                }
+            }
+        }
+
     }
 
 }
