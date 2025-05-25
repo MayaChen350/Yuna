@@ -28,9 +28,9 @@ import embeds.RolePicker
 import embeds.Rules
 
 lateinit var kord: Kord
+lateinit var sobChannel: TextChannel
 val version = Resources.getVersion()
 val guildId = Snowflake(Environment.GUILD_ID)
-val sobChannel = Snowflake(Environment.SOB_BOARD_CHANNEL) // Placeholder
 val memberRole = Snowflake(Environment.MEMBER_ROLE)
 
 @OptIn(PrivilegedIntent::class)
@@ -39,6 +39,7 @@ suspend fun main(args: Array<String>) {
     log("Loading Yuna..", LogType.DEBUG)
     log("Authenticating to Discord..", LogType.NETWORK)
     kord = Kord(Environment.DISCORD_TOKEN)
+    sobChannel = kord.getGuild(guildId).getChannel(Snowflake(Environment.SOB_BOARD_CHANNEL)).asChannelOf<TextChannel>()
 
     Commands().register()
     Projects().register()
@@ -65,7 +66,7 @@ suspend fun main(args: Array<String>) {
             SobBoard().updateBoard()
         } else {
             message.reactions.forEach { reaction ->
-                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count == Environment.SOB_BOARD_REQUIREMENT) {
+                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
                     SobBoard().addMessage(message)
                 }
             }
