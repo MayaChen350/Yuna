@@ -39,7 +39,7 @@ class SobBoard {
         val sobChannel = kord.getGuild(guildId).getChannel(sobChannel).asChannelOf<TextChannel>()
         sobChannel.messages.collect { boardMessage ->
             if(boardMessage.author?.isBot == false || boardMessage.content.isEmpty()) return@collect
-            val originalMessage = getMessage(boardMessage.content)
+            val originalMessage = getMessageFromLink(boardMessage.content)
             sobbedMessages.put(boardMessage, getMessageLink(originalMessage))
             updateBoard()
 
@@ -48,7 +48,7 @@ class SobBoard {
 
     suspend fun updateBoard() {
         sobbedMessages.forEach { (boardMessage, originalMessage) ->
-            val originalMessage: Message = getMessage(originalMessage)
+            val originalMessage: Message = getMessageFromLink(originalMessage)
             val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
             boardMessage.edit {
                 embed {

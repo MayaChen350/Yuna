@@ -7,7 +7,7 @@ fun clickableButton(name: String, link: String): String {
     return "[[$name ↗]](<$link>)"
 }
 
-suspend fun getMessage(message: String) : Message {
+suspend fun getMessageFromLink(message: String) : Message {
     val splitMessage = message.split("/")
     val channelId = Snowflake(splitMessage[5].toLong())
     val messageId = Snowflake(splitMessage[6].toLong())

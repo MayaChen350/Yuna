@@ -15,6 +15,7 @@ import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.guild.MemberJoinEvent
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
+import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.core.event.message.ReactionAddEvent
 import dev.kord.core.event.message.ReactionRemoveEvent
 import dev.kord.core.on
@@ -69,6 +70,11 @@ suspend fun main(args: Array<String>) {
                 }
             }
         }
+    }
+
+    kord.on<MessageUpdateEvent> {
+        val message = getMessage()
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard().updateBoard()
     }
 
     kord.on<ReactionRemoveEvent> {
