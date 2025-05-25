@@ -28,9 +28,9 @@ import embeds.Rules
 
 lateinit var kord: Kord
 val version = Resources.getVersion()
-val guildId = Snowflake(1242845647892123650)
-val sobChannel = Snowflake(1376217561946914976) // Placeholder
-val memberRole = Snowflake(1249425717792477275)
+val guildId = Snowflake(Environment.GUILD_ID)
+val sobChannel = Snowflake(Environment.SOB_BOARD_CHANNEL) // Placeholder
+val memberRole = Snowflake(Environment.MEMBER_ROLE)
 
 @OptIn(PrivilegedIntent::class)
 suspend fun main(args: Array<String>) {
@@ -64,7 +64,7 @@ suspend fun main(args: Array<String>) {
             SobBoard().updateBoard()
         } else {
             message.reactions.forEach { reaction ->
-                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count == 2) {
+                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count == Environment.SOB_BOARD_REQUIREMENT) {
                     SobBoard().addMessage(message)
                 }
             }
