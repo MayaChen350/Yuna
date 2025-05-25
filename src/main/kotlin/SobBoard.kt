@@ -70,27 +70,4 @@ object SobBoard {
 
     }
 
-    suspend fun updateMessageFromLink(originalMessage: String) {
-        val originalMessage: Message = getMessageFromLink(originalMessage)
-        val boardMessage = sobbedMessages.entries.find { it.value == getMessageLink(originalMessage) }?.key
-        val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
-        boardMessage?.edit {
-            embed {
-                description = if(originalMessage.embeds.isEmpty()) {
-                    originalMessage.content
-                } else {
-                    originalMessage.embeds[0].description
-                }
-                author {
-                    name = originalMessage.author?.username
-                    icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
-                }
-                footer {
-                    text = "$sobs 😭"
-                }
-            }
-        }
-
-    }
-
 }
