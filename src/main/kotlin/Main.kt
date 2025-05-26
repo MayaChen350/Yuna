@@ -15,6 +15,9 @@ import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.guild.MemberJoinEvent
 import dev.kord.core.event.interaction.ButtonInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
+import dev.kord.core.event.message.MessageUpdateEvent
+import dev.kord.core.event.message.ReactionAddEvent
+import dev.kord.core.event.message.ReactionRemoveEvent
 import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
@@ -25,9 +28,10 @@ import embeds.RolePicker
 import embeds.Rules
 
 lateinit var kord: Kord
+lateinit var sobChannel: TextChannel
 val version = Resources.getVersion()
-val guildId = Snowflake(1242845647892123650)
-val memberRole = Snowflake(1249425717792477275)
+val guildId = Snowflake(Environment.GUILD_ID)
+val memberRole = Snowflake(Environment.MEMBER_ROLE)
 
 @OptIn(PrivilegedIntent::class)
 suspend fun main(args: Array<String>) {
@@ -35,11 +39,13 @@ suspend fun main(args: Array<String>) {
     log("Loading Yuna..", LogType.DEBUG)
     log("Authenticating to Discord..", LogType.NETWORK)
     kord = Kord(Environment.DISCORD_TOKEN)
+    sobChannel = kord.getGuild(guildId).getChannel(Snowflake(Environment.SOB_BOARD_CHANNEL)).asChannelOf<TextChannel>()
 
     Commands().register()
     Projects().register()
     RolePicker().register()
     Rules().register()
+    SobBoard.getMessages()
 
     kord.on<GuildChatInputCommandInteractionCreateEvent> {
         val response = interaction.deferPublicResponse()
@@ -53,6 +59,30 @@ suspend fun main(args: Array<String>) {
         member.addRole(memberRole)
     }
 
+    kord.on<ReactionAddEvent> {
+        val message = getMessage()
+        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(sobbedMessages.containsValue(getMessageLink(message))) {
+            SobBoard.updateMessageFromMessage(message)
+        } else {
+            message.reactions.forEach { reaction ->
+                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
+                    SobBoard.addMessage(message)
+                }
+            }
+        }
+    }
+
+    kord.on<MessageUpdateEvent> {
+        val message = getMessage()
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
+    }
+
+    kord.on<ReactionRemoveEvent> {
+        val message = getMessage()
+        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
+    }
 
     val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()
     kord.on<ButtonInteractionCreateEvent> {

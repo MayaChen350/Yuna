@@ -3,7 +3,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     application
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "2.2.0-RC"
     id("io.ktor.plugin") version "2.2.3"
 }
 
