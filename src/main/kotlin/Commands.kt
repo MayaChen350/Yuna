@@ -8,10 +8,11 @@ class Commands {
     suspend fun register() {
         VersionCommand().register()
     }
+
     companion object {
 
         suspend fun handle(command: InteractionCommand, response: DeferredPublicMessageInteractionResponseBehavior) {
-            when(command.rootName) {
+            when (command.rootName) {
                 "version" -> VersionCommand.handle(command, response)
                 else -> log("Command /${command.rootName} does not have a handler", LogType.ERROR)
             }

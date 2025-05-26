@@ -3,13 +3,9 @@ import cz.lukynka.prettylog.LoggerSettings
 import cz.lukynka.prettylog.LoggerStyle
 import cz.lukynka.prettylog.log
 import dev.kord.common.Color
-import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.DiscordPartialEmoji
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.asChannelOf
-import dev.kord.core.behavior.channel.createEmbed
-import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.guild.MemberJoinEvent
@@ -21,7 +17,6 @@ import dev.kord.core.event.message.ReactionRemoveEvent
 import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.PrivilegedIntent
-import dev.kord.rest.builder.message.actionRow
 import dev.kord.rest.builder.message.embed
 import embeds.Projects
 import embeds.RolePicker
@@ -34,7 +29,7 @@ val guildId = Snowflake(Environment.GUILD_ID)
 val memberRole = Snowflake(Environment.MEMBER_ROLE)
 
 @OptIn(PrivilegedIntent::class)
-suspend fun main(args: Array<String>) {
+suspend fun main() {
     LoggerSettings.loggerStyle = LoggerStyle.BRACKET_PREFIX
     log("Loading Yuna..", LogType.DEBUG)
     log("Authenticating to Discord..", LogType.NETWORK)
