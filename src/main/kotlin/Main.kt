@@ -27,6 +27,7 @@ lateinit var sobChannel: TextChannel
 val version = Resources.getVersion()
 val guildId = Snowflake(Environment.GUILD_ID)
 val memberRole = Snowflake(Environment.MEMBER_ROLE)
+val sobEmojis = listOf("🏳️‍🌈", "😭", "🏳️‍⚧️")
 
 @OptIn(PrivilegedIntent::class)
 suspend fun main() {
@@ -56,12 +57,12 @@ suspend fun main() {
 
     kord.on<ReactionAddEvent> {
         val message = getMessage()
-        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(!sobEmojis.contains(emoji.name) || message.author?.isBot == true) return@on
         if(sobbedMessages.containsValue(getMessageLink(message))) {
             SobBoard.updateMessageFromMessage(message)
         } else {
             message.reactions.forEach { reaction ->
-                if (reaction.emoji.name == "\uD83D\uDE2D" && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
+                if (sobEmojis.contains(emoji.name) && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
                     SobBoard.addMessage(message)
                 }
             }
@@ -75,7 +76,7 @@ suspend fun main() {
 
     kord.on<ReactionRemoveEvent> {
         val message = getMessage()
-        if(emoji.name != "\uD83D\uDE2D" || message.author?.isBot == true) return@on
+        if(!sobEmojis.contains(emoji.name) || message.author?.isBot == true) return@on
         if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
     }
 
