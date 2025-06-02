@@ -8,23 +8,41 @@ val sobbedMessages: MutableMap<Message, String> = mutableMapOf()
 object SobBoard {
 
     suspend fun addMessage(message: Message) {
-        val sobs = message.reactions.filter { reaction -> reaction.emoji.name == "\uD83D\uDE2D" }[0].data.count
+        val footer = StringBuilder()
+        val descriptionString = StringBuilder()
+        message.reactions.forEach { reaction ->
+            if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
+        }
+
+        if (message.embeds.isEmpty()) {
+            descriptionString.append(message.content)
+        } else {
+            descriptionString.append(message.embeds[0].description)
+        }
+        for (attachment in message.attachments) {
+            if (!attachment.isImage) descriptionString.appendLine("${clickableButton("video", attachment.url)}\n")
+        }
 
         val boardMessage = sobChannel.createMessage {
             content = getMessageLink(message)
             embed {
-                description = if (message.embeds.isEmpty()) {
-                    message.content
-                } else {
-                    message.embeds[0].description
-                }
+                url = "https://example.com/"
+                description = descriptionString.toString()
                 author {
                     name = message.author?.username
                     icon = message.author?.avatar?.cdnUrl?.toUrl()
                 }
                 footer {
-                    text = "$sobs 😭"
+                    text = footer.toString()
 
+                }
+            }
+            for (attachment in message.attachments) {
+                if (attachment.isImage) {
+                    embed {
+                        url = "https://example.com/"
+                        image = attachment.url
+                    }
                 }
             }
         }
@@ -49,20 +67,39 @@ object SobBoard {
 
     suspend fun updateMessageFromMessage(originalMessage: Message) {
         val boardMessage = sobbedMessages.entries.find { it.value == getMessageLink(originalMessage) }?.key
-        val sobs = originalMessage.reactions.filter { it.emoji.name == "\uD83D\uDE2D" }[0].data.count
+        val footer = StringBuilder()
+        val descriptionString = StringBuilder()
+        originalMessage.reactions.forEach { reaction ->
+            if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
+        }
+
+        if (originalMessage.embeds.isEmpty()) {
+            descriptionString.append(originalMessage.content)
+        } else {
+            descriptionString.append(originalMessage.embeds[0].description)
+        }
+        for (attachment in originalMessage.attachments) {
+            if (!attachment.isImage) descriptionString.appendLine(clickableButton("video", attachment.url))
+        }
+
         boardMessage?.edit {
             embed {
-                description = if (originalMessage.embeds.isEmpty()) {
-                    originalMessage.content
-                } else {
-                    originalMessage.embeds[0].description
-                }
+                url = "https://example.com/"
+                description = descriptionString.toString()
                 author {
                     name = originalMessage.author?.username
                     icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
                 }
                 footer {
-                    text = "$sobs 😭"
+                    text = footer.toString()
+                }
+            }
+            for (attachment in originalMessage.attachments) {
+                if (attachment.isImage) {
+                    embed {
+                        url = "https://example.com/"
+                        image = attachment.url
+                    }
                 }
             }
         }
