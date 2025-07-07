@@ -19,6 +19,7 @@ dependencies {
     implementation("cz.lukynka:pretty-log:1.4")
     implementation("dev.kord:kord-core:0.14.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+    implementation("cz.lukynka:hollow-realm:1.1")
     testImplementation(kotlin("test"))
 }
 
@@ -28,9 +29,12 @@ tasks.test {
 }
 
 java {
-    this.targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+    this.targetCompatibility = org.gradle.api.JavaVersion.VERSION_21
 }
 
+kotlin {
+    jvmToolchain(21)
+}
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "MainKt"

@@ -3,15 +3,22 @@ import dev.kord.core.behavior.edit
 import dev.kord.core.entity.Message
 import dev.kord.rest.builder.message.embed
 
-val sobbedMessages: MutableMap<Message, String> = mutableMapOf()
 
 object SobBoard {
 
     suspend fun addMessage(message: Message) {
+        var sobs = 0
+        val authorId: Long = message.getAuthorAsMember().id.value.toLong()
+        val originalMessageId: Long = message.id.value.toLong()
+
         val footer = StringBuilder()
         val descriptionString = StringBuilder()
+
         message.reactions.forEach { reaction ->
-            if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
+            if (sobEmojis.contains(reaction.emoji.name)) {
+                sobs = reaction.count
+                footer.append("${reaction.count} ${reaction.emoji.name}")
+            }
         }
 
         if (message.embeds.isEmpty()) {
@@ -46,10 +53,13 @@ object SobBoard {
                 }
             }
         }
-        sobbedMessages[boardMessage] = getMessageLink(message)
+
+        SobBoardDatabase.write(SobBoardDatabase.SobBoardMessage(boardMessage.id.value.toLong(), sobs, authorId, originalMessageId))
     }
 
     suspend fun getMessages() {
+        SobBoardDatabase
+
         sobChannel.messages.collect { boardMessage ->
             if (boardMessage.author?.isBot == false || boardMessage.content.isEmpty()) return@collect
             val originalMessage = getMessageFromLink(boardMessage.content)
