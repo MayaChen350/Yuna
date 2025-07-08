@@ -27,6 +27,7 @@ object Commands {
     }
 
     private suspend fun delete(command: Snowflake) {
-        kord.rest.interaction.deleteGuildApplicationCommand(kord.selfId, guildId, command)
+        kord.getGuildApplicationCommandOrNull(guildId, command)?.delete()
+        kord.getGlobalApplicationCommandOrNull(command)?.delete()
     }
 }
