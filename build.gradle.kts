@@ -5,6 +5,7 @@ plugins {
     application
     kotlin("jvm") version "2.2.0"
     id("io.ktor.plugin") version "2.2.3"
+    id("io.realm.kotlin") version "3.0.0"
 }
 
 repositories {
@@ -20,6 +21,9 @@ dependencies {
     implementation("dev.kord:kord-core:0.14.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("cz.lukynka:hollow-realm:1.1")
+
+    runtimeOnly("org.slf4j:slf4j-simple:2.0.17")
+
     testImplementation(kotlin("test"))
 }
 

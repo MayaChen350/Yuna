@@ -1,3 +1,4 @@
+import cz.lukynka.hollow.initialize
 import cz.lukynka.prettylog.LogType
 import cz.lukynka.prettylog.LoggerSettings
 import cz.lukynka.prettylog.LoggerStyle
@@ -21,18 +22,26 @@ import dev.kord.rest.builder.message.embed
 import embeds.Projects
 import embeds.RolePicker
 import embeds.Rules
+import io.realm.kotlin.Realm
 
 lateinit var kord: Kord
 lateinit var sobChannel: TextChannel
 val version = Resources.getVersion()
 val guildId = Snowflake(Environment.GUILD_ID)
 val memberRole = Snowflake(Environment.MEMBER_ROLE)
-val sobEmojis = listOf("🏳️‍🌈", "😭", "🏳️‍⚧️")
 
 @OptIn(PrivilegedIntent::class)
 suspend fun main() {
     LoggerSettings.loggerStyle = LoggerStyle.BRACKET_PREFIX
+
     log("Loading Yuna..", LogType.DEBUG)
+
+    Realm.initialize {
+        withSchema<SobBoardDatabase.SobBoardMessage>()
+
+        withSchemaVersion(0L)
+    }
+
     log("Authenticating to Discord..", LogType.NETWORK)
     kord = Kord(Environment.DISCORD_TOKEN)
     sobChannel = kord.getGuild(guildId).getChannel(Snowflake(Environment.SOB_BOARD_CHANNEL)).asChannelOf<TextChannel>()
@@ -57,27 +66,23 @@ suspend fun main() {
 
     kord.on<ReactionAddEvent> {
         val message = getMessage()
-        if(!sobEmojis.contains(emoji.name) || message.author?.isBot == true) return@on
-        if(sobbedMessages.containsValue(getMessageLink(message))) {
-            SobBoard.updateMessageFromMessage(message)
-        } else {
-            message.reactions.forEach { reaction ->
-                if (sobEmojis.contains(emoji.name) && reaction.data.count >= Environment.SOB_BOARD_REQUIREMENT) {
-                    SobBoard.addMessage(message)
-                }
-            }
-        }
+        if(emoji.name != SobBoard.SOB_EMOJI || message.author?.isBot == true) return@on
+
+        val sobs = message.getSobs()
+
+        SobBoard.updateOrCreateIf(message) { sobs >= Environment.SOB_BOARD_REQUIREMENT }
     }
 
     kord.on<MessageUpdateEvent> {
         val message = getMessage()
-        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
+
+        SobBoard.updateMessage(message)
     }
 
     kord.on<ReactionRemoveEvent> {
         val message = getMessage()
-        if(!sobEmojis.contains(emoji.name) || message.author?.isBot == true) return@on
-        if(sobbedMessages.containsValue(getMessageLink(message))) SobBoard.updateMessageFromMessage(message)
+
+        SobBoard.updateMessage(message)
     }
 
     val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()
@@ -101,10 +106,11 @@ suspend fun main() {
             interaction.respondEphemeral {
                 embed { title = responseMessage; color = responseColor }
             }
+            return@on
         }
 
         val member = interaction.user.asMember(guildId)
-        val hasRole = member.roleIds.contains(role!!.id)
+        val hasRole = member.roleIds.contains(role.id)
         if(!hasRole) {
             responseMessage = "Role `${role.name}` has been added to you!"
             responseColor = Color(166, 227, 161)

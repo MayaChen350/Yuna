@@ -12,7 +12,7 @@ object Resources {
     }
 
     private fun readVersion(): String {
-        val inputStream: InputStream? = object {}.javaClass.getResourceAsStream("/yuna.ver")
+        val inputStream: InputStream? = Resources::class.java.getResourceAsStream("/yuna.ver")
         return inputStream!!.bufferedReader().use { it.readText() }.trim()
     }
 
