@@ -5,3 +5,5 @@ gradle/wrapper
 .env
 gradlew
 gradlew.bat
+.kotlin
+database.realm*
