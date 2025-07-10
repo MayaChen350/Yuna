@@ -38,7 +38,6 @@ suspend fun main() {
 
     Realm.initialize {
         withSchema<SobBoardDatabase.SobBoardMessage>()
-
         withSchemaVersion(0L)
     }
 
@@ -50,7 +49,6 @@ suspend fun main() {
     Projects().register()
     RolePicker().register()
     Rules().register()
-    SobBoard.getMessages()
 
     kord.on<GuildChatInputCommandInteractionCreateEvent> {
         val response = interaction.deferPublicResponse()
