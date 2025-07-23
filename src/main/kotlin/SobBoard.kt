@@ -1,10 +1,10 @@
-import cz.lukynka.hollow.Query
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.edit
 import dev.kord.core.entity.Message
 import dev.kord.rest.builder.message.MessageBuilder
 import dev.kord.rest.builder.message.embed
+import java.util.*
 
 
 object SobBoard {
@@ -18,11 +18,15 @@ object SobBoard {
         val authorId: Long = message.getAuthorAsMember().id.value.toLong()
         val originalMessageId: Long = message.id.value.toLong()
 
-        return SobBoardDatabase.SobBoardMessage(
+        val sobBoardMessage = SobBoardDatabase.SobBoardMessage(
             boardMessage.id.value.toLong(),
             authorId,
-            originalMessageId
-        ).also(SobBoardDatabase::write)
+            originalMessageId,
+            0
+        )
+
+        SobBoardDatabase[UUID.randomUUID()] = sobBoardMessage
+        return sobBoardMessage
     }
 
     suspend inline fun updateOrCreateIf(originalMessage: Message, condition: () -> Boolean) {
@@ -38,19 +42,13 @@ object SobBoard {
      * true otherwise
      */
     suspend fun updateMessage(originalMessage: Message): Boolean {
-        val dbMessage = SobBoardDatabase.query(
-            Query.Equals(
-                "originalMessageId",
-                originalMessage.id.value.toLong()
-            )
-        )
-            .firstOrNull() ?: return false
+        val dbMessage = SobBoardDatabase.queryByMessageId(originalMessage.id.value.toLong()) ?: return false
 
         val boardMessage = sobChannel.getMessageOrNull(Snowflake(dbMessage.messageId))
 
         // the message is deleted or something
         if (boardMessage == null) {
-            SobBoardDatabase.delete(dbMessage)
+            SobBoardDatabase.removeByValue(dbMessage)
 
             addMessage(originalMessage)
             return true

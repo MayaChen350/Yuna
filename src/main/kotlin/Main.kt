@@ -1,4 +1,3 @@
-import cz.lukynka.hollow.initialize
 import cz.lukynka.prettylog.LogType
 import cz.lukynka.prettylog.LoggerSettings
 import cz.lukynka.prettylog.LoggerStyle
@@ -22,7 +21,7 @@ import dev.kord.rest.builder.message.embed
 import embeds.Projects
 import embeds.RolePicker
 import embeds.Rules
-import io.realm.kotlin.Realm
+import io.github.dockyard.cz.lukynka.hollow.Hollow
 
 lateinit var kord: Kord
 lateinit var sobChannel: TextChannel
@@ -36,19 +35,17 @@ suspend fun main() {
 
     log("Loading Yuna..", LogType.DEBUG)
 
-    Realm.initialize {
-        withSchema<SobBoardDatabase.SobBoardMessage>()
-        withSchemaVersion(0L)
-    }
+    Hollow.initialize("database")
+    SobBoardDatabase.initialize()
 
     log("Authenticating to Discord..", LogType.NETWORK)
     kord = Kord(Environment.DISCORD_TOKEN)
     sobChannel = kord.getGuild(guildId).getChannel(Snowflake(Environment.SOB_BOARD_CHANNEL)).asChannelOf<TextChannel>()
 
     Commands.register()
-    Projects().register()
-    RolePicker().register()
-    Rules().register()
+//    Projects().register()
+//    RolePicker().register()
+//    Rules().register()
 
     kord.on<GuildChatInputCommandInteractionCreateEvent> {
         val response = interaction.deferPublicResponse()
@@ -64,7 +61,7 @@ suspend fun main() {
 
     kord.on<ReactionAddEvent> {
         val message = getMessage()
-        if(emoji.name != SobBoard.SOB_EMOJI || message.author?.isBot == true) return@on
+        if (emoji.name != SobBoard.SOB_EMOJI || message.author?.isBot == true) return@on
 
         val sobs = message.getSobs()
 
@@ -86,10 +83,10 @@ suspend fun main() {
     val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()
     kord.on<ButtonInteractionCreateEvent> {
 
-        if(interaction.channelId != rolesChannel.id) return@on
+        if (interaction.channelId != rolesChannel.id) return@on
 
         val guild = kord.getGuild(guildId)
-        val role = when(interaction.componentId) {
+        val role = when (interaction.componentId) {
             "role-tester" -> guild.getRole(Snowflake(1249425620216320124))
             "role-ping-twitch" -> guild.getRole(Snowflake(1249426163881873538))
             "role-ping-updates" -> guild.getRole(Snowflake(1249426247260311583))
@@ -100,7 +97,7 @@ suspend fun main() {
         var responseColor = Color(243, 139, 168)
         var responseMessage = "Something went wrong: button with id ${interaction.componentId} does not have role assigned"
 
-        if(role == null) {
+        if (role == null) {
             interaction.respondEphemeral {
                 embed { title = responseMessage; color = responseColor }
             }
@@ -109,7 +106,7 @@ suspend fun main() {
 
         val member = interaction.user.asMember(guildId)
         val hasRole = member.roleIds.contains(role.id)
-        if(!hasRole) {
+        if (!hasRole) {
             responseMessage = "Role `${role.name}` has been added to you!"
             responseColor = Color(166, 227, 161)
             member.addRole(role.id)

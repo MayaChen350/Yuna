@@ -1,17 +1,34 @@
-import cz.lukynka.hollow.RealmStorage
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.dockyard.cz.lukynka.hollow.HollowCache
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-object SobBoardDatabase : RealmStorage<SobBoardDatabase.SobBoardMessage>(SobBoardMessage::class) {
+object SobBoardDatabase : HollowCache<SobBoardDatabase.SobBoardMessage>("sob_board_messages") {
 
+    @Serializable
     class SobBoardMessage(
-        @PrimaryKey
-        var messageId: Long = 0,
-        var authorId: Long = 0,
-        var originalMessageId: Long = 0,
-        var channel: Long = 0,
-    ) : RealmObject {
-        constructor() : this(0, 0, 0, 0)
+        var messageId: Long,
+        var authorId: Long,
+        var originalMessageId: Long,
+        var channel: Long,
+    )
+
+    fun queryByMessageId(messageId: Long): SobBoardMessage? {
+        return this.getAll().values.firstOrNull { it.messageId == messageId }
+    }
+
+    fun removeByValue(value: SobBoardMessage) {
+        val uuid = getAll().reversed()[value] ?: return
+        this.remove(uuid)
+    }
+
+    override fun serialize(value: SobBoardMessage): String {
+        return Json.encodeToString(value)
+    }
+
+    override fun deserialize(string: String): SobBoardMessage {
+        return Json.decodeFromString(string)
     }
 }
 
+fun <K, V> Map<K, V>.reversed(): Map<V, K> = this.entries.associate { (k, v) -> v to k }

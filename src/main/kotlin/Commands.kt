@@ -1,3 +1,4 @@
+import commands.GuineaPigCommand
 import commands.VersionCommand
 import cz.lukynka.prettylog.LogType
 import cz.lukynka.prettylog.log
@@ -9,11 +10,13 @@ import dev.kord.core.entity.interaction.InteractionCommand
 object Commands {
     suspend fun register() {
         VersionCommand().register()
+        GuineaPigCommand().register()
     }
 
     suspend fun handle(command: InteractionCommand, response: DeferredPublicMessageInteractionResponseBehavior) {
         when (command.rootName) {
             "version" -> VersionCommand.handle(command, response)
+            "piggie" -> GuineaPigCommand.handle(command, response)
             else -> {
                 log("Command /${command.rootName} does not have a handler. Deleting...", LogType.WARNING)
                 delete(command.rootId)

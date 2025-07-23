@@ -5,7 +5,7 @@ plugins {
     application
     kotlin("jvm") version "2.0.21"
     id("io.ktor.plugin") version "2.2.3"
-    id("io.realm.kotlin") version "3.0.0"
+    kotlin("plugin.serialization") version "2.0.10"
 }
 
 repositories {
@@ -20,7 +20,7 @@ dependencies {
     implementation("cz.lukynka:pretty-log:1.4")
     implementation("dev.kord:kord-core:0.14.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-    implementation("cz.lukynka:hollow-realm:1.1")
+    api("cz.lukynka:hollow:1.0")
 
     runtimeOnly("org.slf4j:slf4j-simple:2.0.17")
 
