@@ -17,7 +17,7 @@ class RolePicker {
 
     suspend fun register() {
         val rolesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249503869608788050)).asChannelOf<TextChannel>()
-        rolesChannel.messages.collect { it.delete() }
+        rolesChannel.messages.collect { message -> if (message.author?.isBot == true) message.delete() }
 
         rolesChannel.createMessage {
             actionRow {

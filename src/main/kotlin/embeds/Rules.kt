@@ -13,7 +13,7 @@ class Rules {
 
     suspend fun register() {
         val rulesChannel = kord.getGuild(guildId).getChannel(Snowflake(1249428632359927939)).asChannelOf<TextChannel>()
-        rulesChannel.messages.collect { it.delete() }
+        rulesChannel.messages.collect { message -> if (message.author?.isBot == true) message.delete() }
 
         rulesChannel.createEmbed {
             title = "**__Rules__**"

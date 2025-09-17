@@ -13,7 +13,7 @@ class Projects {
 
     suspend fun register() {
         val projectsChannel = kord.getGuild(guildId).getChannel(Snowflake(1249523281959059470)).asChannelOf<TextChannel>()
-        projectsChannel.messages.collect { it.delete() }
+        projectsChannel.messages.collect { message -> if (message.author?.isBot == true) message.delete() }
 
         projectsChannel.createEmbed {
             title = "**__PrettyLog__**"
